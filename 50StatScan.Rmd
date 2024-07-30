@@ -1,0 +1,114 @@
+---
+title: "50StateScan"
+author: "Helen Burn"
+date: "2024-07-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+#Load my three files: 50-state Scan, HS grad from NCES, 6-year college grad from NCES
+
+install.packages(tidyverse)
+library (tidyverse)
+##Import the three data files
+
+state <- read.csv("C:/Users/hburn/Documents/R.Projects/50StateScan/50StScan.csv")
+
+hsgrad <- read.csv("C:/Users/hburn/Documents/R.Projects/50StateScan/HSGrad.csv")
+collgrad <- read.csv("C:/Users/hburn/Documents/R.Projects/50StateScan/CollGrad6Year.csv")
+
+```
+```{r}
+install.packages("tidylog")
+library(tidylog)
+
+```
+```{r}
+##Adjust the state from HS grad to remove the space after the name
+
+hsgrad <- hsgrad %>% mutate(State = str_trim (State, side = c("right")))
+
+
+firstjoin <- full_join (state,collgrad, by = "State")
+fulldata <- full_join (firstjoin, hsgrad, by = "State")
+```
+
+```{r}
+#Make plots
+
+#library(esquisse)
+
+esquisser (fulldata)
+```
+
+
+```{r}
+fulldata <- fulldata %>% mutate(X2011 = as.numeric (X2011))
+fulldata<- fulldata %>% mutate(X2012 = as.numeric (X2012))
+fulldata <- fulldata %>% mutate(X2013 = as.numeric (X2013))
+fulldata <- fulldata %>% mutate(X2014 = as.numeric (X2014))
+fulldata <- fulldata %>% mutate(X2015 = as.numeric (X2015))
+fulldata <- fulldata %>% mutate(X2016 = as.numeric (X2016))
+fulldata <- fulldata %>% mutate(X2017 = as.numeric (X2017))
+fulldata <- fulldata %>% mutate(X2018 = as.numeric (X2018))
+fulldata <- fulldata %>% mutate(X2019 = as.numeric (X2019))
+fulldata <- fulldata %>% mutate(X2020 = as.numeric (X2020))
+fulldata <- fulldata %>% mutate(X2021 = as.numeric (X2021))
+
+
+```
+```{r}
+##Further cleaning
+colnames(fulldata)
+fulldata <- fulldata %>% rename (Total.Completion = Total.Completion....)
+
+```
+```{r}
+fulldata <- fulldata %>% mutate (HS.Grad.Rqmt = as.numeric (HS.Grad.Rqmt))
+fulldata <- fulldata %>% mutate (Total.Completion.... = as.numeric(Total.Completion....))
+
+
+##ERror somewher here there are ....after HS graduation but I did get Total Completion Recorded
+fulldata <- fulldata %>% mutate (HS.Grad.Rqmt.... = as.numeric (HS.Grad.Rqmt....))
+fulldata <- fulldata %>% mutate (No.Longer.Enrolled..Anywhere.... = as.numeric(....)
+                                 )
+
+fulldata <- fulldata %>% mutate (Completion.at.Same.Institution.... = as.numeric(Completion.at.Same.Institution....))
+fulldata <- fulldata %>% mutate (Still.Enrolled..Anywhere....= as.numeric(Still.Enrolled..Anywhere....))
+
+
+```
+
+```{r}
+fulldata %>% count(MP
+                   )
+```
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r
+
+
+fulldata %>%
+ filter(!(Pathway.Types %in% " ")) %>%
+ ggplot() +
+  aes(x = X2021, y = Total.Completion....) +
+  geom_point(colour = "#112446") +
+  theme_minimal()
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
